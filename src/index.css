@@ -1,0 +1,141 @@
+html {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+header {
+  border-bottom: 1px solid #997676;
+  height: 79px;
+  display: flex;
+  align-items: center;
+}
+
+main {
+  height: calc(100vh - 80px);
+  display: flex;
+}
+
+aside {
+  width: 25%;
+  border-right: 2px solid #ccc;
+  padding-right: 50px;
+}
+
+section {
+  width: 75%;
+  padding-left: 50px;
+}
+
+button {
+  height: 30px;
+}
+
+dialog {
+  border: none !important;
+  border-radius: calc(5px * var(--ratio));
+  box-shadow: 0 0 #0000, 0 0 #0000, 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 1.6rem;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.logo {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.category {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dot {
+  height: 14px;
+  width: 14px;
+  background: #ddd;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.notes-list {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: flex-start;
+}
+
+.note {
+  width: 220px;
+  height: 180px;
+  padding: 5px 20px;
+  color: #444;
+  background: #ddd;
+  cursor: pointer;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media only screen and (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+
+@media only screen and (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}

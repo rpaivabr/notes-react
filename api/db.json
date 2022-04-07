@@ -1,0 +1,17 @@
+{
+  "notes": [
+    {
+      "title": "Title",
+      "content": "Content",
+      "categoryId": 1,
+      "id": 1
+    }
+  ],
+  "categories": [
+    {
+      "name": "React",
+      "color": "#87cefa",
+      "id": 1
+    }
+  ]
+}
