@@ -1,17 +1,27 @@
 {
   "notes": [
     {
-      "title": "Title",
-      "content": "Content",
-      "categoryId": 1,
-      "id": 1
+      "id": 1,
+      "title": "React",
+      "content": "notes-react",
+      "categoryId": 2
     }
   ],
   "categories": [
     {
+      "id": 1,
+      "name": "Angular",
+      "color": "#f6c2d9"
+    },
+    {
+      "id": 2,
       "name": "React",
-      "color": "#87cefa",
-      "id": 1
+      "color": "#a1c8e9"
+    },
+    {
+      "id": 3,
+      "name": "Vue",
+      "color": "#bcdfc9"
     }
   ]
 }

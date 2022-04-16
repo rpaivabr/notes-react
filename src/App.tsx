@@ -1,60 +1,141 @@
 import { useEffect, useState } from "react";
+import Axios from "axios";
+import { environment } from "./environments/environment";
+import { ICategory, INote } from "./models";
+import Category from "./components/Category";
+import Note from "./components/Note";
 import "./App.css";
-
-interface Note {
-  id?: number;
-  title: string;
-  content: string;
-  categoryId: number;
-}
-
-interface Category {
-  id?: number;
-  name: string;
-  color: string;
-}
+import DialogCategory from "./components/DialogCategory";
+import DialogNote from "./components/DialogNote";
 
 function App() {
   const logo = "My Notes";
 
-  const [categories, setCategories] = useState<Category[]>([
-    {
-      id: 1,
-      name: "React",
-      color: "#87cefa",
-    },
-  ]);
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: 1,
-      categoryId: 1,
-      title: "Title",
-      content: "Content",
-    },
-  ]);
-
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [notes, setNotes] = useState<INote[]>([]);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] =
     useState<boolean>(false);
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState<boolean>(false);
+  const [noteToUpdate, setNoteToUpdate] = useState<INote>();
+  const [categoryToUpdate, setCategoryToUpdate] = useState<ICategory>();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getCategories();
+    getNotes();
+  }, []);
 
-  const openDialog = (dialogName: "note" | "category"): void => {
-    if (dialogName === "note") {
-      setIsNoteDialogOpen(true);
-    }
-    if (dialogName === "category") {
-      setIsCategoryDialogOpen(true);
-    }
+  const noteColor = (categoryId: number): string => {
+    const category = categories.find((cat) => cat.id === Number(categoryId));
+    return category ? category.color : "";
   };
 
-  const closeDialog = (dialogName: "note" | "category"): void => {
-    if (dialogName === "note") {
-      setIsNoteDialogOpen(false);
-    }
-    if (dialogName === "category") {
-      setIsCategoryDialogOpen(false);
-    }
+  const openNoteDialog = (note?: INote): void => {
+    setNoteToUpdate(note);
+    setIsNoteDialogOpen(true);
+  };
+
+  const openCategoryDialog = (category?: ICategory): void => {
+    console.log(category)
+    setCategoryToUpdate(category);
+    setIsCategoryDialogOpen(true);
+  };
+
+  const closeNoteDialog = (): void => {
+    setIsNoteDialogOpen(false);
+  };
+
+  const closeCategoryDialog = (): void => {
+    setIsCategoryDialogOpen(false);
+  };
+
+  const updateCategory = (category?: ICategory): void => {
+    closeCategoryDialog();
+    if (!category) return;
+    saveCategory(category as ICategory);
+  }
+
+  const saveCategory = (category: ICategory): void => {
+    console.log(category);
+    !category.id ? postCategory(category) : putCategory(category);
+  }
+
+  const updateNote = (note?: INote | number): void => {
+    console.log(note);
+    closeNoteDialog();
+    if (!note) return;
+    typeof note === 'number'
+      ? deleteNote(note as number)
+      : saveNote(note as INote);
+  }
+
+  const saveNote = (note: INote): void => {
+    !note.id ? postNote(note) : putNote(note);
+  }
+
+  /** API methods */
+
+  const getCategories = async () => {
+    const { data: categories } = await Axios.get<ICategory[]>(
+      `${environment.apiUrl}/categories`
+    );
+
+    setCategories([...categories]);
+  };
+
+  const postCategory = async (category: ICategory) => {
+    const { data: newCategory } = await Axios.post<ICategory>(
+      `${environment.apiUrl}/categories`,
+      category
+    );
+
+    setCategories((state) => [...state, newCategory]);
+  };
+
+  const putCategory = async (category: ICategory) => {
+    const { data: updatedCategory } = await Axios.put<ICategory>(
+      `${environment.apiUrl}/categories/${category.id}`,
+      category
+    );
+
+    setCategories((state) =>
+      state.map((category) =>
+        category.id === updatedCategory.id ? updatedCategory : category
+      )
+    );
+  };
+
+  const getNotes = async () => {
+    const { data: notes } = await Axios.get<INote[]>(
+      `${environment.apiUrl}/notes`
+    );
+
+    setNotes([...notes]);
+  };
+
+  const postNote = async (note: INote) => {
+    const { data: newNote } = await Axios.post<INote>(
+      `${environment.apiUrl}/notes`,
+      note
+    );
+
+    setNotes((state) => [...state, newNote]);
+  };
+
+  const putNote = async (note: INote) => {
+    const { data: updatedNote } = await Axios.put<INote>(
+      `${environment.apiUrl}/notes/${note.id}`,
+      note
+    );
+
+    setNotes((state) =>
+      state.map((note) => (note.id === updatedNote.id ? updatedNote : note))
+    );
+  };
+
+  const deleteNote = async (id: number) => {
+    await Axios.delete<void>(`${environment.apiUrl}/notes/${id}`);
+
+    setNotes((state) => state.filter((note) => note.id !== id));
   };
 
   return (
@@ -69,67 +150,39 @@ function App() {
         <aside>
           <div className="title">
             <h3>Categories</h3>
-            <button onClick={() => openDialog("category")}>Add new</button>
+            <button onClick={() => openCategoryDialog()}>Add new</button>
           </div>
-          <div className="category">
-            <span className="dot" style={{ backgroundColor: "#87cefa" }}></span>
-            <span>React</span>
-          </div>
-          <div className="category">
-            <span className="dot"></span>
-          </div>
+          {categories.map((category) => (
+            <Category
+              category={category}
+              key={category.id}
+              onClick={() => openCategoryDialog(category)}
+            />
+          ))}
         </aside>
 
         <section>
           <div className="title">
             <h3>Notes</h3>
-            <button onClick={() => openDialog("note")}>Add new</button>
+            <button onClick={() => openNoteDialog()}>Add new</button>
           </div>
           <div className="notes-list">
-            <div className="note" style={{ backgroundColor: "#87cefa" }}>
-              <h4>Title</h4>
-              <p>Content</p>
-            </div>
-            <div className="note"></div>
-            <div className="note"></div>
-            <div className="note"></div>
-            <div className="note"></div>
+            {notes.map((note) => (
+              <Note
+                color={noteColor(note.categoryId)}
+                key={note.id}
+                note={note}
+                onClick={() => openNoteDialog(note)}
+              />
+            ))}
           </div>
         </section>
       </main>
 
       {(isCategoryDialogOpen || isNoteDialogOpen) && (
         <div className="overlay">
-          {isNoteDialogOpen && (
-            <dialog className="center">
-              <div className="dialog-content">
-                <h2>Note Dialog Title</h2>
-                <p>
-                  In order to give an example of paragraph, we kindly ask you to
-                  change and use anything you want as content
-                </p>
-              </div>
-              <div className="dialog-actions">
-                <button onClick={() => closeDialog("note")}>Cancel</button>
-                <button onClick={() => closeDialog("note")}>Confirm</button>
-              </div>
-            </dialog>
-          )}
-          {isCategoryDialogOpen && (
-            <dialog className="center">
-              <div className="dialog-content">
-                <h2>Category Dialog Title</h2>
-                <p>
-                  In order to give an example of paragraph, we kindly ask you to
-                  change and use anything you want as content
-                </p>
-              </div>
-              <div className="dialog-actions">
-                <button onClick={() => closeDialog("category")}>Cancel</button>
-                <button onClick={() => closeDialog("category")}>Confirm</button>
-              </div>
-            </dialog>
-          )}
+          <DialogCategory open={isCategoryDialogOpen} category={categoryToUpdate} onClose={updateCategory} />
+          <DialogNote open={isNoteDialogOpen} note={noteToUpdate} categories={categories} onClose={updateNote} />
         </div>
       )}
     </div>
